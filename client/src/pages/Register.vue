@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <h1 class="title">Register</h1>
-    <form action="http://localhost:8081/register" class="form" method="POST">
+    <form action="http://localhost:8093/register" class="form" method="POST">
       <label class="form-label" for="#nomComplet">Nom complet</label>
       <input class="form-input" type="nomComplet" id="nomComplet" name="nomComplet" required placeholder="Nom complet">
       <label class="form-label" for="#dni">Dni</label>
@@ -74,7 +74,8 @@ export default {
   data: () => ({
     error: false,
     usuario: '',
-    password: ''
+    password: '',
+    dni: ''
   })
 }
 </script>

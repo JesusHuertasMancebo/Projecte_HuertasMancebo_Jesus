@@ -3,24 +3,7 @@ var Login = require('../app/model/login');
 const { realpath } = require('fs/promises');
 
 class CrudLogin {
-    mydb=new db.Database();
-
-    /*inserir(planet,callback) {
-        let conn = this.mydb.getConnection();
-        let sql = "INSERT INTO planet(id, name, rotation_period, orbital_period, diameter, climate, gravity, terrain, surface_water, population) " +
-        "VALUES (?,?,?,?,?,?,?,?,?,?)";
-
-        conn.query(sql,[planet.id,planet.name,planet.rotation_period,planet.orbital_period,planet.diameter,planet.climate,planet.gravity,planet.terrain,planet.surface_water,planet.population],(err,results,fields)=>{
-            if (err){
-                console.log("Error inserint dades: " + err);
-            }
-            else{
-                conn.end();
-                callback(results);
-                console.log("Planeta "+planet.name+" inserit correctament")
-            }
-        });
-    }*/
+    mydb=new db.Database(); 
 
     userPassValid(user,password,callback){
         let conn = this.mydb.getConnection();
@@ -39,8 +22,9 @@ class CrudLogin {
 
     usuariProfeAlumne(user,callback){
         let conn = this.mydb.getConnection();
-        let sql = "select * from users right join professor on users.id = professor.id_professor WHERE users.username = '"+user+"' LIMIT 1";
+        let sql = "select *, if(professor.id_professor is null, 'alumne', 'professor') AS role from users LEFT join professor on users.id = professor.id_professor WHERE users.username = '" + user + "' LIMIT 1;";
 
+        console.log("usuariProfeAlumne Sql: " + sql)
         conn.query(sql,function(err,[results],fields){
             if(err){
                 console.log("Error: " + err)
@@ -68,6 +52,20 @@ class CrudLogin {
     getUser_Username(user,callback){
         let conn = this.mydb.getConnection();
         let sql = "select * from users where username = '"+user+"'";
+
+        conn.query(sql, [user], function(err,results){
+            if(err) {
+                console.log("Error: " + err);
+            } else {
+                conn.end();
+            }
+            callback(results, err);
+        });
+    }
+
+    getIdUser(username,callback){
+        let conn = this.mydb.getConnection();
+        let sql = "select id from users where username = '"+username+"'";
 
         conn.query(sql, [user], function(err,results){
             if(err) {
@@ -151,7 +149,6 @@ class CrudLogin {
         });
     }
 
-
     getAllUsers(callback){
         let conn = this.mydb.getConnection();
         let sql = "SELECT * FROM users";
@@ -165,7 +162,6 @@ class CrudLogin {
             }
         });
     }
-
 }
 
 module.exports={

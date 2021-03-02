@@ -1,13 +1,13 @@
 <template>
   <div class="login">
     <h1 class="title">Login</h1>
-    <form action="http://localhost:8081/login" class="form" method="POST">
+    <form id="formLogin" action="http://localhost:8093/login" class="form" method="POST" @submit="login">
       <label class="form-label" for="#usuari">Usuari:</label>
       <input v-model="usuari" class="form-input" type="usuari" id="usuari" name="username" required placeholder="Usuari">
       <label class="form-label" for="#contraseña">Contraseña:</label>
-      <input v-model="contraseña" class="form-input" type="contraseña" name="password" id="contraseña" placeholder="Contraseña">
+      <input v-model="contraseña" class="form-input" type="contraseña" name="password" id="password" placeholder="Contraseña">
       <a href="/#/register" style="color:#0b9185;">Regístrat</a>
-      <input class="form-submit" type="submit" onClick="showMessage()" value="Login">
+      <input class="form-submit" type="submit"  value="Login">
     </form>
   </div>
 </template>
@@ -66,6 +66,9 @@
 </style>
 
 <script>
+
+import { api } from '../boot/axios'
+
 export default {
   name: 'PageIndex',
   data: () => ({
@@ -74,14 +77,55 @@ export default {
     error: false
   }),
   methods: {
-    login () {
+    login (e) {
+      console.log('Prueba login')
       console.log(this.usuari)
       console.log(this.contraseña)
+
+      api.post('/login', {
+        username: this.usuari,
+        password: this.contraseña
+      }).then((response) => {
+        console.log('response')
+        console.log(response)
+        console.log(response.data.autToken)
+        setCookie('autToken', response.data.autToken)
+
+        console.log('Cookies: ' + getCookie('autToken'))
+      })
+
+      e.preventDefault()
     },
     showMessage () {
       var message = document.getElementById('usuari').value
+      console.log('Prueba show message')
       console.log(message)
+    },
+    loadData () {
+      api.get('/api/backend')
+        .then((response) => {
+          this.data = response.data
+        })
+        .catch(() => {
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: 'Loading failed',
+            icon: 'report_problem'
+          })
+        })
     }
   }
+}
+
+function setCookie (key, value) {
+  var expires = new Date()
+  expires.setTime(expires.getTime() + (1 * 24 * 60 * 60 * 1000))
+  document.cookie = key + '=' + value + ';expires=' + expires.toUTCString()
+}
+
+function getCookie (key) {
+  var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)')
+  return keyValue ? keyValue[2] : null
 }
 </script>
