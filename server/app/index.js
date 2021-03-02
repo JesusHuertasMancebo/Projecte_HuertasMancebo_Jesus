@@ -384,7 +384,6 @@ app.get("/modulsId",authenticateJWT,(req,res)=>{
 })
 
 
-
 /*loginCrud.getAllUsers(res=>{
     return console.log(res);
 });*/
