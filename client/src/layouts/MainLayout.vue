@@ -8,9 +8,8 @@
           round
           icon="menu"
           aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
+          @click="drawerState = !drawerState"
         />
-
         <q-toolbar-title>
           Qualificacions App
         </q-toolbar-title>
@@ -22,8 +21,7 @@
     </q-header>
 
     <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
+      v-model="drawerState"
       bordered
       content-class="bg-grey-1"
     >
@@ -49,6 +47,7 @@
 </template>
 
 <script>
+import { api } from 'boot/axios'
 import EssentialLink from 'components/EssentialLink.vue'
 
 const linksData = [
@@ -56,13 +55,37 @@ const linksData = [
     title: 'Login',
     caption: 'Login',
     icon: 'login',
-    link: '/'
+    link: '/#/login'
   },
   {
     title: 'About',
     caption: 'About',
     icon: 'about',
     link: '/#/about'
+  },
+  {
+    title: 'Test',
+    caption: 'Test',
+    icon: 'test',
+    link: '/#/test'
+  },
+  {
+    title: 'Notes',
+    caption: 'Notes',
+    icon: 'test',
+    link: '/#/notes'
+  },
+  {
+    title: 'Assignatura',
+    caption: 'Assignatura',
+    icon: 'test',
+    link: '/#/assignatura'
+  },
+  {
+    title: 'Moduls',
+    caption: 'Moduls',
+    icon: 'test',
+    link: '/#/moduls'
   }
 ]
 
@@ -82,6 +105,30 @@ export default {
       )
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
       return timeStamp.toLocaleDateString('cat-ES', options)
+    },
+    drawerState: {
+      get () {
+        return this.$store.state.showcase.drawerState
+      },
+      set (val) {
+        this.$store.commit('showcase/updateDrawerState', val)
+      }
+    }
+  },
+  methods: {
+    loadData () {
+      api.get('/api/backend')
+        .then((response) => {
+          this.data = response.data
+        })
+        .catch(() => {
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: 'Loading failed',
+            icon: 'report_problem'
+          })
+        })
     }
   }
 }
